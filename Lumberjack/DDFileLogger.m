@@ -79,7 +79,10 @@ BOOL doesAppRunInBackground(void);
         
         NSKeyValueObservingOptions kvoOptions = NSKeyValueObservingOptionOld | NSKeyValueObservingOptionNew;
         
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wselector"
         [self addObserver:self forKeyPath:NSStringFromSelector(@selector(maximumNumberOfLogFiles)) options:kvoOptions context:nil];
+#pragma clang diagnostic pop
         
         NSLogVerbose(@"DDFileLogManagerDefault: logsDirectory:\n%@", [self logsDirectory]);
         NSLogVerbose(@"DDFileLogManagerDefault: sortedLogFileNames:\n%@", [self sortedLogFileNames]);
@@ -578,6 +581,8 @@ BOOL doesAppRunInBackground(void);
 
 @implementation DDFileLogger
 
+@synthesize doNotReuseLogFiles = _doNotReuseLogFiles;
+
 - (id)init
 {
     DDLogFileManagerDefault *defaultLogFileManager = [[DDLogFileManagerDefault alloc] init];
@@ -784,7 +789,7 @@ BOOL doesAppRunInBackground(void);
     #endif
     
     uint64_t delay = (uint64_t)([logFileRollingDate timeIntervalSinceNow] * NSEC_PER_SEC);
-    dispatch_time_t fireTime = dispatch_time(DISPATCH_TIME_NOW, delay);
+    dispatch_time_t fireTime = dispatch_time(DISPATCH_TIME_NOW, (int64_t)delay);
     
     dispatch_source_set_timer(rollingTimer, fireTime, DISPATCH_TIME_FOREVER, 1.0);
     dispatch_resume(rollingTimer);
@@ -1004,7 +1009,7 @@ BOOL doesAppRunInBackground(void);
             // somewhere we want to roll it and use a new one.
             currentLogFileVnode = dispatch_source_create(
                 DISPATCH_SOURCE_TYPE_VNODE,
-                [currentLogFileHandle fileDescriptor],
+                (uintptr_t)[currentLogFileHandle fileDescriptor],
                 DISPATCH_VNODE_DELETE | DISPATCH_VNODE_RENAME,
                 loggerQueue
             );

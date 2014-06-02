@@ -386,8 +386,11 @@ static unsigned int numProcessors;
 
 + (BOOL)isRegisteredClass:(Class)class
 {
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wselector"
     SEL getterSel = @selector(ddLogLevel);
     SEL setterSel = @selector(ddSetLogLevel:);
+#pragma clang diagnostic pop
     
 #if TARGET_OS_IPHONE && !TARGET_IPHONE_SIMULATOR
     
@@ -968,7 +971,10 @@ static char *dd_str_copy(const char *str)
 #endif
         floor(NSFoundationVersionNumber) > NSFoundationVersionNumber_iOS_6_1 // iOS 7+ (> iOS 6.1)
 #else
+  #pragma clang diagnostic push
+  #pragma clang diagnostic ignored "-Wselector"
         [NSTimer instancesRespondToSelector:@selector(tolerance)] // OS X 10.9+
+  #pragma clang diagnostic pop
 #endif
         ) {
       queueLabel = dd_str_copy(dispatch_queue_get_label(DISPATCH_CURRENT_QUEUE_LABEL));
