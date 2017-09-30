@@ -1,6 +1,8 @@
+
 Pod::Spec.new do |s|
+
   s.name     = 'CocoaLumberjack'
-  s.version  = '1.9.0'
+  s.version  = '3.2.1'
   s.license  = 'BSD'
   s.summary  = 'A fast & simple, yet powerful & flexible logging framework for Mac and iOS.'
   s.homepage = 'https://github.com/CocoaLumberjack/CocoaLumberjack'
@@ -14,27 +16,46 @@ Pod::Spec.new do |s|
                   'atomic operations, and the dynamic nature of the objective-c runtime.'
 
   s.requires_arc   = true
-  s.ios.platform   = :ios, '5.0'
-  s.osx.platform   = :osx, '10.7'
 
-  s.preserve_paths = 'Lumberjack/**/README*'
+  s.preserve_paths = 'README.md', 'Classes/CocoaLumberjack.swift', 'Framework/Lumberjack/CocoaLumberjack.modulemap'
+  
+  s.ios.deployment_target     = '5.0'
+  s.osx.deployment_target     = '10.7'
+  s.watchos.deployment_target = '2.0'
+  s.tvos.deployment_target    = '9.0'
 
-  s.public_header_files = 'Lumberjack/**/*.h'
+  s.default_subspecs = 'Default', 'Extensions'
 
-  s.default_subspec = 'Extensions'
+  s.subspec 'Default' do |ss|
+    ss.source_files         = 'Classes/CocoaLumberjack.h', 'Classes/DD*.{h,m}'
+    ss.public_header_files  = 'Classes/CocoaLumberjack.h', 'Classes/DD*.h'
+  end
 
   s.subspec 'Core' do |ss|
-    ss.source_files = 'Lumberjack/*.{h,m}'
+    ss.source_files         = 'Classes/DD*.{h,m}'
+    ss.public_header_files  = 'Classes/DD*.h'
   end
 
   s.subspec 'Extensions' do |ss|
-    ss.dependency 'CocoaLumberjack/Core'
-    ss.source_files = 'Lumberjack/Extensions/*.{h,m}'
+    ss.dependency 'CocoaLumberjack/Default'
+    ss.source_files         = 'Classes/Extensions/*.{h,m}'
+    ss.public_header_files  = 'Classes/Extensions/*.h'
   end
   
   s.subspec 'CLI' do |ss|
-      ss.dependency 'CocoaLumberjack/Core'
-      ss.source_files = 'Lumberjack/CLI/*.{h,m}'
+    ss.osx.deployment_target    = '10.7'
+    ss.osx.dependency 'CocoaLumberjack/Default'
+    ss.osx.source_files         = 'Classes/CLI/*.{h,m}'
+    ss.osx.public_header_files  = 'Classes/CLI/*.h'
+  end
+
+  s.subspec 'Swift' do |ss|
+    ss.ios.deployment_target      = '8.0'
+    ss.osx.deployment_target      = '10.10'
+    ss.watchos.deployment_target  = '2.0'
+    ss.tvos.deployment_target     = '9.0'
+    ss.dependency 'CocoaLumberjack/Default'
+    ss.source_files               = 'Classes/CocoaLumberjack.swift'
   end
   
 end
