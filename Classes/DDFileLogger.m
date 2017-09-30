@@ -388,8 +388,8 @@ unsigned long long const kDDDefaultLogFilesDiskQuota   = 20 * 1024 * 1024; // 20
 
 - (NSArray *)sortedLogFileInfos {
     return  [[self unsortedLogFileInfos] sortedArrayUsingComparator:^NSComparisonResult(DDLogFileInfo   * _Nonnull obj1, DDLogFileInfo   * _Nonnull obj2) {
-        NSDate *date1 = [NSDate new];
-        NSDate *date2 = [NSDate new];
+        NSDate *date1 = nil;
+        NSDate *date2 = nil;
 
         NSArray<NSString *> *arrayComponent = [[obj1 fileName] componentsSeparatedByString:@" "];
         if (arrayComponent.count > 0) {
@@ -405,6 +405,13 @@ unsigned long long const kDDDefaultLogFilesDiskQuota   = 20 * 1024 * 1024; // 20
             stringDate = [stringDate stringByReplacingOccurrencesOfString:@".log" withString:@""];
             stringDate = [stringDate stringByReplacingOccurrencesOfString:@".archived" withString:@""];
             date2 = [[self logFileDateFormatter] dateFromString:stringDate] ?: [obj2 creationDate];
+        }
+        
+        if (date1 == nil) {
+        	date1 = [NSDate date];
+        }
+        if (date2 == nil) {
+        	date2 = [NSDate date];
         }
         
         return [date2 compare:date1];
